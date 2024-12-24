@@ -15,6 +15,10 @@ type ApiFileListReq struct {
 }
 
 type ApiFileListRes struct {
+	FileList []*FileInfo `json:"fileList"`
+}
+
+type FileInfo struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`
 	IsDir         bool   `json:"isDir"`
@@ -25,26 +29,26 @@ type ApiFileListRes struct {
 	ThumbnailPath string `json:"thumbnailPath,omitempty"`
 }
 
-func FilePathToApiFileListRes(absPath string, info ...fs.FileInfo) ApiFileListRes {
+func FilePathToApiFileInfo(absPath string, info ...fs.FileInfo) FileInfo {
 	var fi fs.FileInfo
 	if len(info) > 0 {
 		fi = info[0]
 	} else {
 		fi, _ = os.Stat(absPath)
 	}
-	res := FileInfoToApiFileListRes(fi)
+	res := FileInfoToApiFilInfo(fi)
 	res.ID = absPath
 	res.FilePath = absPath
 	return res
 }
 
-func FileInfoToApiFileListRes(fi fs.FileInfo) ApiFileListRes {
-	return ApiFileListRes{
+func FileInfoToApiFilInfo(fi fs.FileInfo) FileInfo {
+	return FileInfo{
 		Name:          fi.Name(),
 		IsDir:         fi.IsDir(),
 		Ext:           strings.TrimPrefix(filepath.Ext(fi.Name()), "."),
 		Size:          fi.Size(),
-		Modified:      fi.ModTime().Unix(),
+		Modified:      fi.ModTime().UnixMilli(),
 		ThumbnailPath: "", // TODO:
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/log"
+	"github.com/lfhy/log"
 )
 
 type RouteController[Req any, Res any] struct {

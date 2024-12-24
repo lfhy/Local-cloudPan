@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/log"
 	fstatic "github.com/gofiber/fiber/v3/middleware/static"
+	"github.com/lfhy/log"
 )
 
 func Run() {
@@ -43,6 +43,6 @@ func Run() {
 	// 启动服务
 	err := app.Listen(conf.Bind + ":" + fmt.Sprint(conf.Port))
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 }

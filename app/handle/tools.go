@@ -13,7 +13,7 @@ func ChangeToSysPath(path string) string {
 	return filepath.Join(conf.ShareFilePath, path)
 }
 
-func ListDir(rootDir string) []*api.ApiFileListRes {
+func ListDir(rootDir string) []*api.FileInfo {
 	// 打开根目录
 	dir, err := os.Open(rootDir)
 	if err != nil {
@@ -28,10 +28,10 @@ func ListDir(rootDir string) []*api.ApiFileListRes {
 		log.Warn("Error reading directory entries:", err)
 		return nil
 	}
-	var res []*api.ApiFileListRes
+	var res []*api.FileInfo
 	// 遍历目录项并打印文件名
 	for _, entry := range entries {
-		info := api.FilePathToApiFileListRes(entry.Name(), entry)
+		info := api.FilePathToApiFileInfo(entry.Name(), entry)
 		res = append(res, &info)
 	}
 	return res
