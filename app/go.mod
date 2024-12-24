@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.23.4
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/lfhy/flag v0.1.1
 	github.com/lfhy/log v0.0.2
@@ -41,6 +42,7 @@ require (
 	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

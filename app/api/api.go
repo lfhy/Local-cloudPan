@@ -1,6 +1,9 @@
 package api
 
-import "github.com/gofiber/fiber/v3"
+import (
+	"github.com/gofiber/fiber/v3"
+	"github.com/lfhy/log"
+)
 
 type ApiRes struct {
 	c        fiber.Ctx
@@ -12,7 +15,11 @@ type ApiRes struct {
 
 func (res *ApiRes) Send() error {
 	res.c.Status(res.httpCode)
-	return res.c.JSON(res)
+	err := res.c.JSON(res)
+	if err != nil {
+		log.Warnln("发送失败:", err)
+	}
+	return err
 }
 
 func ResOK(ctx fiber.Ctx, msg string, data any) error {
@@ -33,5 +40,6 @@ func ResError(ctx fiber.Ctx, err error) error {
 		res.httpCode = 500
 		res.Code = 500
 	}
+	log.Errorln("返回错误:", err)
 	return res.Send()
 }

@@ -2,8 +2,11 @@ package api
 
 import (
 	"io/fs"
+	"local-cloud-api/conf"
+	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -36,19 +39,26 @@ func FilePathToApiFileInfo(absPath string, info ...fs.FileInfo) FileInfo {
 	} else {
 		fi, _ = os.Stat(absPath)
 	}
+	absPath = strings.TrimPrefix(absPath, conf.ShareFilePath)
 	res := FileInfoToApiFilInfo(fi)
+	absPath = strings.ReplaceAll(url.PathEscape(absPath), "%2F", "/")
 	res.ID = absPath
-	res.FilePath = absPath
+	res.FilePath = conf.ApiPrefix + "/view" + absPath
+	if slices.Index(PicType, res.Ext) >= 0 {
+		res.ThumbnailPath = res.FilePath + "?short=true"
+	}
 	return res
 }
 
 func FileInfoToApiFilInfo(fi fs.FileInfo) FileInfo {
+	ext := strings.TrimPrefix(filepath.Ext(fi.Name()), ".")
+
 	return FileInfo{
-		Name:          fi.Name(),
-		IsDir:         fi.IsDir(),
-		Ext:           strings.TrimPrefix(filepath.Ext(fi.Name()), "."),
-		Size:          fi.Size(),
-		Modified:      fi.ModTime().UnixMilli(),
-		ThumbnailPath: "", // TODO:
+		Name:     fi.Name(),
+		IsDir:    fi.IsDir(),
+		Ext:      ext,
+		Size:     fi.Size(),
+		Modified: fi.ModTime().UnixMilli(),
+		// ThumbnailPath: ThumbnailPath,
 	}
 }
