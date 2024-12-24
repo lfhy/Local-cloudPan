@@ -15,5 +15,5 @@ view:
 
 app:
 	echo "-> 构建APP"
-	cd app && go build -o ../out/local-cloud main.go
+	cd app && go mod tidy && go build -o ../out/local-cloud main.go
 	echo "-> 完成"
