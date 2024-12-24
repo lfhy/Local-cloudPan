@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"context"
 	"local-cloud-api/api"
 
 	"github.com/gofiber/fiber/v3"
@@ -14,4 +15,9 @@ func RegisterHandle[Req any, Res any](route string, method string, fn func(ctx f
 		Handle: fn,
 		Name:   route,
 	}
+}
+
+// 设置返回的消息
+func SetResMsg(ctx fiber.Ctx, msg string) {
+	ctx.SetUserContext(context.WithValue(ctx.UserContext(), api.ResApiMsg, msg))
 }

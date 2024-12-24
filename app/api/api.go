@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v3"
 	"github.com/lfhy/log"
 )
@@ -29,6 +31,10 @@ func ResOK(ctx fiber.Ctx, msg string, data any) error {
 
 func ResError(ctx fiber.Ctx, err error) error {
 	res := ApiRes{c: ctx, Msg: err.Error()}
+	userRes := ctx.UserContext().Value(ResApiMsg)
+	if userRes != nil {
+		res.Msg = fmt.Sprint(res)
+	}
 	apiError, ok := err.(Error)
 	if ok {
 		if apiError.code == 0 {

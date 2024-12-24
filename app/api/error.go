@@ -33,4 +33,8 @@ var (
 	ErrorNoRes = Error{
 		code: 0,
 	}
+	ErrorCheckFileFailed = Error{
+		code: 201,
+		msg:  "部分文件不存在",
+	}
 )

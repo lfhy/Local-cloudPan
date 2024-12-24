@@ -1,5 +1,7 @@
 package api
 
-type ApiCheckFileListReq struct{}
+type ApiCheckFileListReq struct {
+	FilenameLists []string `query:"filenameList"`
+}
 
 type ApiCheckFileListRes struct{}
