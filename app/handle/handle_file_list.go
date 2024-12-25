@@ -17,5 +17,5 @@ func fileList(ctx fiber.Ctx, req *api.ApiFileListReq) (*api.ApiFileListRes, erro
 	log.Debugf("req: %+v\n", req)
 	realPath := ChangeToSysPath(req.Path)
 	log.Debug("访问路径:", realPath)
-	return &api.ApiFileListRes{FileList: ListDir(realPath)}, nil
+	return &api.ApiFileListRes{FileList: ListDir(realPath, req.SortMode)}, nil
 }

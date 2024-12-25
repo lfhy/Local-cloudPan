@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/disintegration/imaging"
 	"github.com/lfhy/log"
@@ -21,7 +22,11 @@ func ChangeToSysPath(path string) string {
 	return absPath
 }
 
-func ListDir(rootDir string) []*api.FileInfo {
+func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
+	sortBy := "name"
+	if len(sorts) > 0 {
+		sortBy = sorts[0]
+	}
 	// 打开根目录
 	dir, err := os.Open(rootDir)
 	if err != nil {
@@ -39,8 +44,28 @@ func ListDir(rootDir string) []*api.FileInfo {
 	var res []*api.FileInfo
 	// 遍历目录项并打印文件名
 	for _, entry := range entries {
-		info := api.FilePathToApiFileInfo(filepath.Join(rootDir, entry.Name()), entry)
+		name := entry.Name()
+		if conf.IgnoreDotFiles && name[0] == '.' {
+			continue
+		}
+		info := api.FilePathToApiFileInfo(filepath.Join(rootDir, name), entry)
 		res = append(res, &info)
+	}
+	// 排序
+	switch sortBy {
+	default:
+		sort.Slice(res, func(i, j int) bool {
+			if res[i].IsDir && res[j].IsDir {
+				return res[i].Name < res[j].Name
+			}
+			if res[i].IsDir {
+				return true
+			}
+			if res[j].IsDir {
+				return false
+			}
+			return res[i].Name < res[j].Name
+		})
 	}
 	return res
 }
