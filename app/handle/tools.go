@@ -54,6 +54,14 @@ func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
 	}
 	// 排序
 	switch sortBy {
+	case "size":
+		sort.Slice(res, func(i, j int) bool {
+			return res[i].Size > res[j].Size
+		})
+	case "modified":
+		sort.Slice(res, func(i, j int) bool {
+			return res[i].Modified > res[j].Modified
+		})
 	default:
 		sort.Slice(res, func(i, j int) bool {
 			if res[i].IsDir && res[j].IsDir {
