@@ -46,6 +46,6 @@ func ResError(ctx fiber.Ctx, err error) error {
 		res.httpCode = 500
 		res.Code = 500
 	}
-	log.Errorln("返回错误:", err)
+	log.PError("返回错误:", err)
 	return res.Send()
 }

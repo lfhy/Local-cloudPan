@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	RegisterHandle("/delete", http.MethodPost, fileMoveOrCopy)
+	RegisterHandle("/fileMoveOrCopy", http.MethodPost, fileMoveOrCopy)
 }
 
 // 文件移动或复制

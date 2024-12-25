@@ -27,6 +27,8 @@ func (r *RouteController[Req, Res]) RouteFunc() func(fiber.Ctx) error {
 		bind.JSON(&req)
 		bind.Query(&req)
 		bind.Header(&req)
+		bind.Form(&req)
+		bind.MultipartForm(&req)
 		res, err := r.Handle(c, &req)
 		if err != nil {
 			return ResError(c, err)

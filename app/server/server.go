@@ -8,13 +8,19 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 	fstatic "github.com/gofiber/fiber/v3/middleware/static"
 	"github.com/lfhy/log"
 )
 
 func Run() {
 	// 初始化应用
-	app := fiber.New()
+
+	var config fiber.Config
+	config.BodyLimit = 1024 * 1024 * 1024 * 1024
+	config.AppName = "local-cloud-api"
+	app := fiber.New(config)
+	app.Use(cors.New())
 	// 绑定API
 	for route, apifunc := range handle.ApiRouteInfo {
 		switch apifunc.GetMethod() {

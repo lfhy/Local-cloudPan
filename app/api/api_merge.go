@@ -1,5 +1,8 @@
 package api
 
-type ApiMergeReq struct{}
+type ApiMergeReq struct {
+	FileId string `json:"fileId"`
+	Path   string `json:"path"`
+}
 
 type ApiMergeRes struct{}

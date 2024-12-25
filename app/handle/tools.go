@@ -13,11 +13,11 @@ import (
 	"github.com/lfhy/log"
 )
 
-func ChangeToSysPath(path string) string {
-	absPath := filepath.Join(conf.ShareFilePath, path)
-	path, err := url.PathUnescape(absPath)
+func ChangeToSysPath(path ...string) string {
+	absPath := filepath.Join(conf.ShareFilePath, filepath.Join(path...))
+	upath, err := url.PathUnescape(absPath)
 	if err == nil {
-		absPath = path
+		absPath = upath
 	}
 	return absPath
 }
@@ -89,4 +89,9 @@ func GetShortImg(imagePath string) ([]byte, error) {
 	thumb := imaging.Thumbnail(img, 300, 300, imaging.CatmullRom)
 	err = imaging.Encode(buffer, thumb, imaging.JPEG)
 	return buffer.Bytes(), err
+}
+
+// 获取文件上传路径
+func GetFileUploadPath(fileId string) string {
+	return ChangeToSysPath(".uploads", fileId)
 }
