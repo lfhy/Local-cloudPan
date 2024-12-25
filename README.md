@@ -2,6 +2,8 @@
 
 通过浏览器页面来共享本地文件夹，对其进行网盘式的在线管理。
 
+本项目将原项目nodejs后端更换为go后端，并将前端页面嵌入二进制文件中，方便在不同环境部署运行。
+
 支持**列表**与**网格**两种查看模式
 
 支持的操作
@@ -21,19 +23,28 @@
 
 前端：Vue3 + TS + Element-plus
 
-后端：koa2
+后端: fiber
+
+原项目后端：koa2
 
 ## 项目运行
 
-运行前请先安装`nodejs`
+编译运行前请先安装`nodejs v16`以上,`go 1.21`以上。
 
 `clone`项目到本地
 
 ```shell
-git clone https://github.com/dcbestwords/Local-cloudPan.git
+git clone https://github.com/lfhy/Local-cloudPan.git
 ```
 
-前端运行
+### 打包运行
+```
+make -B
+``` 
+
+编译后的可执行文件位于out/目录下，运行`./out/local-cloud`即可启动服务，不需要下面单独运行前端后端。
+
+### 前端调试运行
 
 ```shell
 cd admin
@@ -41,7 +52,7 @@ npm i
 npm run dev
 ```
 
-后端运行
+### 原后端调试运行
 
 > 可以通过`server/config.js`配置后台服务的端口及代理的文件夹
 
@@ -50,8 +61,6 @@ cd server
 npm i
 npm start
 ```
-
-为了确保运行正确，请先运行后端服务。再运行前端，之后访问 http://localhost:8888
 
 ## UI演示
 
