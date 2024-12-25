@@ -23,6 +23,7 @@ func ChangeToSysPath(path string) string {
 }
 
 func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
+	res := make([]*api.FileInfo, 0)
 	sortBy := "name"
 	if len(sorts) > 0 {
 		sortBy = sorts[0]
@@ -31,7 +32,7 @@ func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
 	dir, err := os.Open(rootDir)
 	if err != nil {
 		log.Warn("Error opening directory:", err)
-		return nil
+		return res
 	}
 	defer dir.Close()
 
@@ -39,9 +40,9 @@ func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
 	entries, err := dir.Readdir(-1)
 	if err != nil {
 		log.Warn("Error reading directory entries:", err)
-		return nil
+		return res
 	}
-	var res []*api.FileInfo
+
 	// 遍历目录项并打印文件名
 	for _, entry := range entries {
 		name := entry.Name()
