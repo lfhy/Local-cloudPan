@@ -85,7 +85,7 @@ export const uploadChunk = (fileId, chunk) => {
   formData.append('index', chunk.index);
   formData.append('chunkId', chunk.chunkId);
   formData.append('chunkData', chunk.blob);
-  return request.post<any, ResponseData>(API.UPLOAD, formData);
+  return request.post<any, ResponseData>(API.UPLOAD, formData ,{ timeout: 60000 });
 };
 
 export const mergeChunks = async (fileId, path) => {

@@ -18,7 +18,7 @@ func init() {
 func checkFileList(ctx fiber.Ctx, req *api.ApiCheckFileListReq) (*api.ApiCheckFileListRes, error) {
 	log.Printf("校验文件列表: %+v\n", req)
 	for _, file := range req.FilenameLists {
-		_, err := os.Stat(ChangeToSysPath(file))
+		_, err := os.Stat(ChangeToSysPath(req.Path, file))
 		if err != nil {
 			SetResMsg(ctx, fmt.Sprintf("%v 文件不存在！本次操作无效！", file))
 			return nil, api.ErrorCheckFileFailed

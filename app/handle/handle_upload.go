@@ -48,6 +48,8 @@ func upload(ctx fiber.Ctx, req *api.ApiUploadReq) (*api.ApiUploadRes, error) {
 		log.Warnln("复制数据错误:", err)
 		return nil, err
 	}
+	log.Debugln(req.ChunkId, "上传结束")
 	SetResMsg(ctx, "分片上传成功")
 	return nil, nil
+	// return nil, api.ErrorNoRes
 }
