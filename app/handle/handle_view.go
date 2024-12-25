@@ -21,10 +21,11 @@ func view(ctx fiber.Ctx, req *api.ApiViewReq) (*api.ApiViewRes, error) {
 	absPath := ChangeToSysPath(filePath)
 	log.Info("filePath:", absPath)
 	ext := strings.TrimPrefix(filepath.Ext(absPath), ".")
+	ctx.Type(ext).Response().Header.Set("Cache-Control", "max-age=86400")
 	if req.Short {
 		data, err := GetShortImg(absPath)
 		if err == nil {
-			ctx.Type(ext).Send(data)
+			ctx.Send(data)
 			return nil, api.ErrorNoRes
 		}
 	}
@@ -32,6 +33,6 @@ func view(ctx fiber.Ctx, req *api.ApiViewReq) (*api.ApiViewRes, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx.Type(ext).Send(data)
+	ctx.Send(data)
 	return nil, api.ErrorNoRes
 }
