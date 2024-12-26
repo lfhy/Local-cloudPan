@@ -77,7 +77,7 @@
   md.use(emoji).use(Mark);
   const initRender = async () => {
     if (props.playInfo.type === 'md') {
-      const res = await request.get(props.playInfo.url);
+      const res = await request.get(props.playInfo.url+"?replaceImgPath=true");
       mdHtml.value.innerHTML = md.render(res);
     }
   };
