@@ -2,6 +2,7 @@ package handle
 
 import (
 	"encoding/json"
+	"fmt"
 	"local-cloud-api/api"
 	"net/http"
 	"os"
@@ -50,11 +51,12 @@ func verify(ctx fiber.Ctx, req *api.ApiVerifyReq) (*api.ApiVerifyRes, error) {
 		})
 		return nil, api.ErrorNoRes
 	}
+
 	// 文件存在则判断是否需要上传
 	Chunks := make([]string, 0)
 	for _, chunk := range saveReq.Chunks {
-		_, err := os.Stat(filepath.Join(workDir, chunk.ChunkId))
-		if err != nil {
+		md5, _ := Md5File(filepath.Join(workDir, fmt.Sprintf("%05d.part", chunk.Index)))
+		if chunk.ChunkId != md5 {
 			Chunks = append(Chunks, chunk.ChunkId)
 		}
 	}

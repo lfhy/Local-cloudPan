@@ -1,7 +1,9 @@
 package handle
 
 import (
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"local-cloud-api/api"
 	"net/http"
@@ -36,18 +38,24 @@ func merge(ctx fiber.Ctx, req *api.ApiMergeReq) (*api.ApiMergeRes, error) {
 	}
 	defer saveFile.Close()
 	for _, chunk := range saveReq.Chunks {
-		chunkF, err := os.Open(filepath.Join(workDir, chunk.ChunkId))
+		chunkF, err := os.Open(GetChunkPath(req.FileId, chunk.Index))
 		if err != nil {
 			os.Remove(savePath)
 			return nil, err
 		}
-		_, err = io.Copy(saveFile, chunkF)
+		hash, reader := Md5Read(chunkF)
+		_, err = io.Copy(saveFile, reader)
 		if err != nil {
 			chunkF.Close()
 			os.Remove(savePath)
 			return nil, err
 		}
 		chunkF.Close()
+		if hex.EncodeToString(hash.Sum(nil)) != chunk.ChunkId {
+			os.Remove(savePath)
+			return nil, fmt.Errorf("分块校验失败文件合并失败")
+		}
+
 	}
 	SetResMsg(ctx, "文件上传成功")
 	os.RemoveAll(workDir)

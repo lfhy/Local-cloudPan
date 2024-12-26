@@ -2,6 +2,7 @@ package conf
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/lfhy/flag"
 )
@@ -14,6 +15,7 @@ var (
 	LocalStaticPath string
 	DisableView     bool
 	IgnoreDotFiles  bool
+	UploadTmpPath   string
 )
 
 func init() {
@@ -28,5 +30,6 @@ func init() {
 	flag.StringConfigVar(&LocalStaticPath, "static", "server", "static", "", "前端编译的静态页面路径")
 	flag.BoolConfigVar(&DisableView, "no-view", "server", "noview", false, "不启动静态页面路由")
 	flag.BoolConfigVar(&IgnoreDotFiles, "ignore-dot", "server", "ignore-dot", true, "忽略点开头的文件")
+	flag.StringConfigVar(&UploadTmpPath, "upload-tmp", "server", "upload-tmp", filepath.Join(baseDir, ".uploads"), "上传临时文件路径")
 	flag.Parse()
 }

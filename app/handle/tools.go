@@ -2,7 +2,10 @@ package handle
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
+	"hash"
 	"io"
 	"local-cloud-api/api"
 	"local-cloud-api/conf"
@@ -16,13 +19,17 @@ import (
 	"github.com/lfhy/log"
 )
 
-func ChangeToSysPath(path ...string) string {
-	absPath := filepath.Join(conf.ShareFilePath, filepath.Join(path...))
+func FormatPath(absPath string) string {
 	upath, err := url.PathUnescape(absPath)
 	if err == nil {
 		absPath = upath
 	}
 	return absPath
+}
+
+func ChangeToSysPath(path ...string) string {
+	absPath := filepath.Join(conf.ShareFilePath, filepath.Join(path...))
+	return FormatPath(absPath)
 }
 
 func ListDir(rootDir string, sorts ...string) []*api.FileInfo {
@@ -96,7 +103,12 @@ func GetShortImg(imagePath string) ([]byte, error) {
 
 // 获取文件上传路径
 func GetFileUploadPath(fileId string) string {
-	return ChangeToSysPath(".uploads", fileId)
+	return FormatPath(filepath.Join(conf.UploadTmpPath, fileId))
+}
+
+// 获取分块路径
+func GetChunkPath(fileId string, chunkIndex int) string {
+	return FormatPath(filepath.Join(conf.UploadTmpPath, fileId, fmt.Sprintf("%05d.part", chunkIndex)))
 }
 
 func StatUntilFileNameOK(dest string) string {
@@ -140,4 +152,28 @@ func Copy(src, dest string) error {
 		return err
 	}
 	return nil
+}
+
+func Md5File(filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	hash := md5.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+func Md5Write(w io.Writer) (hash.Hash, io.Writer) {
+	hash := md5.New()
+	return hash, io.MultiWriter(hash, w)
+}
+
+func Md5Read(r io.Reader) (hash.Hash, io.Reader) {
+	hash := md5.New()
+	return hash, io.TeeReader(r, hash)
 }

@@ -160,6 +160,12 @@
   function startUploadTasks(fileId, chunks) {
     const fileInfo = uploadFileList.value.find((file) => file.fileId === fileId);
     fileUploadQueues.push({ fileId, fileInfo, chunks, status: 'uploading' }); // 保存该文件的分片队列
+    if (chunks.length == 0 ) {
+      // 合并分片
+      const path = route.query.path || '';
+      doMergeChunks(fileId, path,fileInfo);
+      return;
+    }
     processUploadQueue();
   }
   function processUploadQueue() {
@@ -180,35 +186,9 @@
               uploadingData.set(fileId, { ...data, uploadedChunks: uploadedChunks + 1 });
               setProgress(fileId);
               if (uploadedChunks + 1 === totalChunks) {
-                // 合并分片
-                const path = route.query.path || '';
-                mergeChunks(fileId, path).then((needs) => {
-                  if (needs.length !== 0) {
-                    // 更新进度条
-                    const data = uploadingData.get(fileId);
-                    uploadingData.set(fileId, {
-                      ...data,
-                      uploadedChunks: totalChunks - needs.length,
-                    });
-                    setProgress(fileId);
-                    // 重新上传需要上传的分片
-                    const uploadList = chunks.filter((chunk) => needs.includes(chunk.chunkId));
-                    fileUploadQueues.push({
-                      fileId,
-                      fileInfo,
-                      chunks: uploadList,
-                      status: 'uploading',
-                    });
-                    processUploadQueue();
-                  } else {
-                    clearFileInfo(fileId);
-                    fileInfo.status = 4;
-                    props.onSuccessed();
-                    if (resolvedCount.value === uploadFileList.value.length) {
-                      showPanel.value = false;
-                    }
-                  }
-                });
+                  // 合并分片
+                  const path = route.query.path || '';
+                  doMergeChunks(fileId, path,fileInfo);
               }
               processUploadQueue();
             })
@@ -223,6 +203,36 @@
         }
       });
     }
+  }
+
+  function doMergeChunks(fileId, path,fileInfo) {
+    mergeChunks(fileId, path).then((needs) => {
+      if (needs.length !== 0) {
+        // 更新进度条
+        const data = uploadingData.get(fileId);
+        uploadingData.set(fileId, {
+          ...data,
+          uploadedChunks: totalChunks - needs.length,
+        });
+        setProgress(fileId);
+        // 重新上传需要上传的分片
+        const uploadList = chunks.filter((chunk) => needs.includes(chunk.chunkId));
+        fileUploadQueues.push({
+          fileId,
+          fileInfo,
+          chunks: uploadList,
+          status: 'uploading',
+        });
+        processUploadQueue();
+      } else {
+        clearFileInfo(fileId);
+        fileInfo.status = 4;
+        props.onSuccessed();
+        if (resolvedCount.value === uploadFileList.value.length) {
+          showPanel.value = false;
+        }
+      }
+    });
   }
 
   const clearFileInfo = (fileId) => {

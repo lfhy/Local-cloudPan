@@ -1,12 +1,12 @@
 package handle
 
 import (
+	"encoding/hex"
 	"fmt"
 	"io"
 	"local-cloud-api/api"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/lfhy/log"
@@ -36,17 +36,22 @@ func upload(ctx fiber.Ctx, req *api.ApiUploadReq) (*api.ApiUploadRes, error) {
 	// 保存文件
 	workDir := GetFileUploadPath(req.FileId)
 	os.MkdirAll(workDir, os.ModeDir)
-	chunkPath := filepath.Join(workDir, req.ChunkId)
+	chunkPath := req.GetChunkPath()
 	savePath, err := os.OpenFile(chunkPath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		log.Warnln("保存文件错误:", err)
 		return nil, err
 	}
 	defer savePath.Close()
-	_, err = io.Copy(savePath, file) // 将文件内容写入到指定路径
+	hash, md5Write := Md5Write(savePath)
+	_, err = io.Copy(md5Write, file) // 将文件内容写入到指定路径
 	if err != nil {
 		log.Warnln("复制数据错误:", err)
 		return nil, err
+	}
+	if hex.EncodeToString(hash.Sum(nil)) != req.ChunkId {
+		os.RemoveAll(chunkPath)
+		return nil, fmt.Errorf("分块数据校验失败")
 	}
 	log.Debugln(req.ChunkId, "上传结束")
 	SetResMsg(ctx, "分片上传成功")
