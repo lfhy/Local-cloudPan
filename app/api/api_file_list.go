@@ -51,7 +51,7 @@ func FilePathToApiFileInfo(absPath string, info ...fs.FileInfo) FileInfo {
 }
 
 func FileInfoToApiFilInfo(fi fs.FileInfo) FileInfo {
-	ext := strings.TrimPrefix(filepath.Ext(fi.Name()), ".")
+	ext := strings.ToLower(strings.TrimPrefix(filepath.Ext(fi.Name()), "."))
 
 	return FileInfo{
 		Name:     fi.Name(),

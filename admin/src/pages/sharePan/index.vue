@@ -170,7 +170,7 @@
   let scrollContainerRef = ref(null);
   let wrapper = ref(null);
   const itemHeight = computed(() => (curMode.value === 0 ? 50 : 250));
-  const curMode = ref<0 | 1>(0); // 0: 列表视图 1: 网格视图
+  const curMode = ref<0 | 1>(1); // 0: 列表视图 1: 网格视图
   const { list } = useVitualList(allDate, {
     wrapper,
     itemHeight, // 元素高度
@@ -470,7 +470,8 @@
 
   // 视图切换
   const toggleView = (mode: 0 | 1) => {
-    curMode.value = mode;
+    // curMode.value = mode;
+    curMode.value = curMode.value === 0 ? 1 : 0;
     selectedFiles.value = [];
   };
 
