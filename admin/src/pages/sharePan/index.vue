@@ -333,10 +333,12 @@
       const { ext: type, filePath: url, name } = row;
       showPlayWindow(name, url, type);
     } else if (row.fileType === 'picture') {
-      ElMessage({
-        type: 'info',
-        message: '请点击图片查看原图！',
-      });
+      // ElMessage({
+      //   type: 'info',
+      //   message: '请点击图片查看原图！',
+      // });
+      const { fileType: type, filePath: url, name } = row;
+      showPlayWindow(name, url, type);
     } else {
       ElMessage({
         type: 'warning',

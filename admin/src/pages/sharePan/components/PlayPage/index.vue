@@ -6,7 +6,6 @@
         <h2>{{ playInfo.name }}</h2>
         <ElIcon size="16" class="close-btn" @click="hanleClose"><CloseBold /></ElIcon>
       </div>
-
       <!-- 内容 -->
       <div v-if="playInfo.type === 'video'" ref="video" class="inner-wrapper"></div>
       <audio
@@ -16,6 +15,16 @@
         class="inner-wrapper"></audio>
       <div v-else-if="playInfo.type === 'md'" class="md-content-container inner-wrapper">
         <div class="md-content" ref="mdHtml"></div>
+      </div>
+      <!-- 图片展示 -->
+      <div v-else-if="playInfo.type === 'picture'" class="picture">
+        <el-image
+          :src="playInfo.url"
+          :lazy="true"
+          class="picture"
+          fit="contain"
+          preview-teleported
+          @click.stop="() => {}" />
       </div>
       <!-- txt | pdf -->
       <iframe
@@ -127,7 +136,12 @@
         }
       }
     }
-
+    .picture {
+      width: 100%;
+      height: calc(100vh - 9rem);
+      text-align: center;
+      border-radius: 10px;
+    }
     .inner-wrapper {
       width: 100%;
       max-height: calc(100vh - 9rem);
