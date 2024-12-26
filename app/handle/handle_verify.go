@@ -37,10 +37,10 @@ func verify(ctx fiber.Ctx, req *api.ApiVerifyReq) (*api.ApiVerifyRes, error) {
 	// 读取失败或者解析失败则说明文件不存在
 	if err != nil {
 		// 上传目录不存在则说明全部需要上传
-		os.MkdirAll(workDir, os.ModeDir)
+		os.MkdirAll(workDir, 0755)
 		// 保存上传文件信息
 		data, _ := json.Marshal(req)
-		os.WriteFile(fileInfoPath, data, os.ModePerm)
+		os.WriteFile(fileInfoPath, data, 0644)
 		Chunks := make([]string, 0)
 		for _, chunk := range req.Chunks {
 			Chunks = append(Chunks, chunk.ChunkId)

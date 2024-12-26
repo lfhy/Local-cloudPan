@@ -35,9 +35,9 @@ func upload(ctx fiber.Ctx, req *api.ApiUploadReq) (*api.ApiUploadRes, error) {
 	log.Debugf("上传文件分块: %+v\n", req)
 	// 保存文件
 	workDir := GetFileUploadPath(req.FileId)
-	os.MkdirAll(workDir, os.ModeDir)
+	os.MkdirAll(workDir, 0755)
 	chunkPath := req.GetChunkPath()
-	savePath, err := os.OpenFile(chunkPath, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	savePath, err := os.OpenFile(chunkPath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		log.Warnln("保存文件错误:", err)
 		return nil, err

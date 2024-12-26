@@ -163,7 +163,7 @@
     if (chunks.length == 0 ) {
       // 合并分片
       const path = route.query.path || '';
-      doMergeChunks(fileId, path,fileInfo);
+      doMergeChunks(fileId, path,fileInfo,chunks,chunks);
       return;
     }
     processUploadQueue();
@@ -188,7 +188,7 @@
               if (uploadedChunks + 1 === totalChunks) {
                   // 合并分片
                   const path = route.query.path || '';
-                  doMergeChunks(fileId, path,fileInfo);
+                  doMergeChunks(fileId, path,fileInfo,totalChunks,chunks);
               }
               processUploadQueue();
             })
@@ -205,7 +205,7 @@
     }
   }
 
-  function doMergeChunks(fileId, path,fileInfo) {
+  function doMergeChunks(fileId, path,fileInfo,totalChunks,chunks) {
     mergeChunks(fileId, path).then((needs) => {
       if (needs.length !== 0) {
         // 更新进度条

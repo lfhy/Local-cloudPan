@@ -5,4 +5,6 @@ type ApiMergeReq struct {
 	Path   string `json:"path"`
 }
 
-type ApiMergeRes struct{}
+type ApiMergeRes struct {
+	NeedChunkIds []string `json:"needs"`
+}

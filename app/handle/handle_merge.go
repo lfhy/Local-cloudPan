@@ -3,7 +3,6 @@ package handle
 import (
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io"
 	"local-cloud-api/api"
 	"net/http"
@@ -37,25 +36,50 @@ func merge(ctx fiber.Ctx, req *api.ApiMergeReq) (*api.ApiMergeRes, error) {
 		return nil, err
 	}
 	defer saveFile.Close()
+	var needs []string
+	var isDeletePath bool
 	for _, chunk := range saveReq.Chunks {
+		if isDeletePath {
+			md5, _ := Md5File(GetChunkPath(req.FileId, chunk.Index))
+			if md5 != chunk.ChunkId {
+				needs = append(needs, chunk.ChunkId)
+			}
+			continue
+		}
 		chunkF, err := os.Open(GetChunkPath(req.FileId, chunk.Index))
 		if err != nil {
-			os.Remove(savePath)
-			return nil, err
+			if !isDeletePath {
+				os.RemoveAll(savePath)
+				isDeletePath = true
+			}
+			// return nil, err
+			needs = append(needs, chunk.ChunkId)
+			continue
 		}
 		hash, reader := Md5Read(chunkF)
 		_, err = io.Copy(saveFile, reader)
 		if err != nil {
 			chunkF.Close()
-			os.Remove(savePath)
-			return nil, err
+			if !isDeletePath {
+				os.RemoveAll(savePath)
+				isDeletePath = true
+			}
+			needs = append(needs, chunk.ChunkId)
+			continue
 		}
 		chunkF.Close()
 		if hex.EncodeToString(hash.Sum(nil)) != chunk.ChunkId {
-			os.Remove(savePath)
-			return nil, fmt.Errorf("分块校验失败文件合并失败")
+			if !isDeletePath {
+				os.RemoveAll(savePath)
+				isDeletePath = true
+			}
+			// return nil, fmt.Errorf("分块校验失败文件合并失败")
+			needs = append(needs, chunk.ChunkId)
+			continue
 		}
-
+	}
+	if len(needs) > 0 {
+		return &api.ApiMergeRes{NeedChunkIds: needs}, api.ErrorCheckFileFailed
 	}
 	SetResMsg(ctx, "文件上传成功")
 	os.RemoveAll(workDir)
