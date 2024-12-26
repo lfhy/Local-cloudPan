@@ -2,12 +2,15 @@ package handle
 
 import (
 	"bytes"
+	"fmt"
+	"io"
 	"local-cloud-api/api"
 	"local-cloud-api/conf"
 	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/disintegration/imaging"
 	"github.com/lfhy/log"
@@ -94,4 +97,47 @@ func GetShortImg(imagePath string) ([]byte, error) {
 // 获取文件上传路径
 func GetFileUploadPath(fileId string) string {
 	return ChangeToSysPath(".uploads", fileId)
+}
+
+func StatUntilFileNameOK(dest string) string {
+	name := dest
+	ext := filepath.Ext(dest)
+	noext := strings.TrimSuffix(name, ext)
+	count := 0
+	for {
+		_, err := os.Stat(name)
+		if err == nil {
+			name = fmt.Sprintf("%v-%v%v", noext, count, ext)
+			count++
+		} else {
+			break
+		}
+	}
+	return name
+}
+
+func Copy(src, dest string) error {
+	// 打开源文件
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		log.Errorln("打开源失败:", err)
+		return err
+	}
+	defer sourceFile.Close()
+	dest = StatUntilFileNameOK(dest)
+	// 创建目标文件
+	destinationFile, err := os.Create(dest)
+	if err != nil {
+		log.Errorln("创建目标文件失败:", err)
+		return err
+	}
+	defer destinationFile.Close()
+
+	// 复制文件内容
+	_, err = io.Copy(destinationFile, sourceFile)
+	if err != nil {
+		log.Errorln("复制文件失败:", err)
+		return err
+	}
+	return nil
 }
