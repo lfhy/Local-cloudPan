@@ -16,6 +16,7 @@ var (
 	DisableView     bool
 	IgnoreDotFiles  bool
 	UploadTmpPath   string
+	ApiMode         bool
 )
 
 func init() {
@@ -31,5 +32,6 @@ func init() {
 	flag.BoolConfigVar(&DisableView, "no-view", "server", "noview", false, "不启动静态页面路由")
 	flag.BoolConfigVar(&IgnoreDotFiles, "ignore-dot", "server", "ignore-dot", true, "忽略点开头的文件")
 	flag.StringConfigVar(&UploadTmpPath, "upload-tmp", "server", "upload-tmp", filepath.Join(baseDir, ".uploads"), "上传临时文件路径")
+	flag.BoolVar(&ApiMode, "api-mode", false, "只启动为api模式")
 	flag.Parse()
 }

@@ -21,17 +21,22 @@ func Run() {
 	config.AppName = "local-cloud-api"
 	app := fiber.New(config)
 	app.Use(cors.New())
+	prefix := conf.ApiPrefix
+	if conf.ApiMode {
+		prefix = ""
+		conf.DisableView = true
+	}
 	// 绑定API
 	for route, apifunc := range handle.ApiRouteInfo {
 		switch apifunc.GetMethod() {
 		case http.MethodGet:
-			app.Get(conf.ApiPrefix+route, apifunc.RouteFunc())
+			app.Get(prefix+route, apifunc.RouteFunc())
 		case http.MethodDelete:
-			app.Delete(conf.ApiPrefix+route, apifunc.RouteFunc())
+			app.Delete(prefix+route, apifunc.RouteFunc())
 		case http.MethodPatch:
-			app.Patch(conf.ApiPrefix+route, apifunc.RouteFunc())
+			app.Patch(prefix+route, apifunc.RouteFunc())
 		case http.MethodPost:
-			app.Post(conf.ApiPrefix+route, apifunc.RouteFunc())
+			app.Post(prefix+route, apifunc.RouteFunc())
 		}
 	}
 	// 初始化页面

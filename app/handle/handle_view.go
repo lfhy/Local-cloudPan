@@ -28,7 +28,8 @@ func view(ctx fiber.Ctx, req *api.ApiViewReq) (*api.ApiViewRes, error) {
 	absPath := ChangeToSysPath(filePath)
 	log.Info("filePath:", absPath)
 	ext := strings.TrimPrefix(filepath.Ext(absPath), ".")
-	ctx.Type(ext).Response().Header.Set("Cache-Control", "max-age=86400")
+	respHeader := &ctx.Type(ext).Response().Header
+	respHeader.Set("Cache-Control", "max-age=86400")
 	if req.Short {
 		data, err := GetShortImg(absPath)
 		if err == nil {
@@ -36,12 +37,12 @@ func view(ctx fiber.Ctx, req *api.ApiViewReq) (*api.ApiViewRes, error) {
 			return nil, api.ErrorNoRes
 		}
 	}
-	data, err := os.ReadFile(absPath)
-	if err != nil {
-		return nil, err
-	}
+	// 如果是md 则处理相对路径
 	if req.ReplaceImgPath && strings.ToLower(filepath.Ext(absPath)) == ".md" {
-
+		data, err := os.ReadFile(absPath)
+		if err != nil {
+			return nil, err
+		}
 		// 存储提取到的图片路径
 		var imgPaths []string
 		matches := ImgRe.FindAllStringSubmatch(string(data), -1)
@@ -63,8 +64,11 @@ func view(ctx fiber.Ctx, req *api.ApiViewReq) (*api.ApiViewRes, error) {
 			}
 			resdata = strings.ReplaceAll(resdata, imgPath, conf.ApiPrefix+"/view/"+filepath.Dir(filePath)+"/"+imgPath)
 		}
-		data = []byte(resdata)
+		ctx.SendString(resdata)
+	} else {
+		// 否则发送文件
+		ctx.SendFile(absPath, fiber.SendFile{ByteRange: true})
 	}
-	ctx.Send(data)
+
 	return nil, api.ErrorNoRes
 }

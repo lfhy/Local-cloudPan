@@ -7,7 +7,22 @@
         <ElIcon size="16" class="close-btn" @click="hanleClose"><CloseBold /></ElIcon>
       </div>
       <!-- 内容 -->
-      <div v-if="playInfo.type === 'video'" ref="video" class="inner-wrapper"></div>
+      <div v-if="playInfo.type === 'video'" 
+        ref="video" 
+        class="inner-wrapper">
+        <video-player
+        :src=playInfo.url
+        :controls="true"
+        :loop="false"
+        :volume="0.6"
+        :autoplay="true"
+        :speedRate="true"
+        :playbackRates=[0.5,1,1.5,2,4,8]
+        :fluid="true"
+        language="zh-cn"
+        preload="auto"
+        class="inner-wrapper" />
+      </div>
       <audio
         v-else-if="playInfo.type === 'audio'"
         :src="playInfo.url"
@@ -47,6 +62,9 @@
   import MarkdownIt from 'markdown-it';
   import { full as emoji } from 'markdown-it-emoji';
   import Mark from 'markdown-it-mark';
+
+  import { VideoPlayer } from '@videojs-player/vue'
+  import 'video.js/dist/video-js.css'
 
   defineOptions({ name: 'PlayPage' });
   const props = defineProps<{
@@ -92,24 +110,13 @@
   };
 
   const hanleClose = () => emit('update:playPageShow', false);
+
   onMounted(() => {
-    if (video.value) {
-      // @ts-ignore
-      const player = new Player({
-        el: video.value,
-        url: props.playInfo.url,
-        width: '100%',
-        height: '600px',
-        playsinline: true, // 移动端内联播放
-        volume: 0.3, // 默认音量
-        pip: true, // 是否开启画中画
-        lang: 'zh-cn', // 语言
-        plugins: [], // 自行定义组装插件
-      });
-    } else if (mdHtml.value) {
+    if (mdHtml.value) {
       initRender();
     }
   });
+
 </script>
 
 <style scoped lang="scss">
