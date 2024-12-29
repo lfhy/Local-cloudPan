@@ -37,11 +37,11 @@ func ResError(ctx fiber.Ctx, err error) error {
 	}
 	apiError, ok := err.(Error)
 	if ok {
-		if apiError.code == 0 {
+		if apiError.Code == 0 {
 			return nil
 		}
 		res.httpCode = 200
-		res.Code = apiError.code
+		res.Code = apiError.Code
 	} else {
 		res.httpCode = 500
 		res.Code = 500

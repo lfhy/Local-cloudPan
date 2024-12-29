@@ -13,6 +13,8 @@ view:
 	rm -rf app/static/dist || true
 	cp -r admin/dist app/static
 
+.PHONY: app
+
 app:
 	echo "-> 构建APP"
 	cd app && go mod tidy && go build -o ../out/local-cloud main.go
