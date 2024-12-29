@@ -5,7 +5,7 @@ front:
 	echo "-> 删除旧构建"
 	rm -rf admin/dist || true
 	echo "-> 开始构建页面"
-	cd admin && npm i && npm run build
+	cd admin && npm i  --legacy-peer-deps && npm run build
 	echo "-> 页面构建完成"
 
 view:

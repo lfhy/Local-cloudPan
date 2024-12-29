@@ -4,9 +4,10 @@
     :key="file.id"
     class="file-item"
     :class="{ checked: checkedList[file.id] }"
-    @contextmenu="handleContextMenu($event, file.id)">
+    @contextmenu="handleContextMenu($event, file.id)"
+    @click="fileChoosed(file.id)">
     <input class="file-checkbox" type="checkbox" v-model="checkedList[file.id]" name="selected" />
-    <div @click="fileClick(index)">
+    <div @dblclick="fileClick(index)">
       <!-- 图片展示 -->
       <template v-if="file.fileType === 'picture'">
         <el-image
@@ -72,8 +73,12 @@
   );
   const renameIpt = ref<HTMLInputElement | null>(null);
 
-  // 文件点击
+  // 文件双击事件
   const fileClick = (index: number) => emit('fileClick', props.fileList[index]);
+  // 文件点击
+  const fileChoosed =  (index: number) => {
+    checkedList[index] = !checkedList[index];
+  }
   // 右键点击时勾选，事件传播到父组件，弹出右键菜单
   const handleContextMenu = (e: MouseEvent, id: number) => {
     e.preventDefault();
