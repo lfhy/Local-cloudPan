@@ -129,12 +129,12 @@
     margin-bottom: 1.5rem;
     text-align: center;
     vertical-align: top;
-    border-radius: 10px;
+    border-radius: 15px;
     position: relative;
     &:hover,
     &.checked {
       background-color: var(--ep-file-hover);
-      transform: scale(1.04);
+      transform: scale(1.01);
       transition: transform 0.2s ease-out;
       .file-checkbox {
         visibility: visible;
