@@ -10,7 +10,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	fstatic "github.com/gofiber/fiber/v3/middleware/static"
-	"github.com/lfhy/log"
 )
 
 func Run() {
@@ -50,10 +49,10 @@ func Run() {
 			return c.Redirect().To("/index.html")
 		})
 	}
-
-	// 启动服务
-	err := app.Listen(conf.Bind + ":" + fmt.Sprint(conf.Port))
-	if err != nil {
-		log.Error(err)
+	appConfig := fiber.ListenConfig{
+		EnablePrefork:     true,
+		EnablePrintRoutes: true,
 	}
+	// 启动服务
+	go app.Listen(conf.Bind+":"+fmt.Sprint(conf.Port), appConfig)
 }

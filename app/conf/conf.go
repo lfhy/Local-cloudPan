@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	Port            int
+	Port            string
 	ShareFilePath   string
 	Bind            string
 	ApiPrefix       string
@@ -17,6 +17,7 @@ var (
 	IgnoreDotFiles  bool
 	UploadTmpPath   string
 	ApiMode         bool
+	Gui             bool
 )
 
 func init() {
@@ -24,7 +25,7 @@ func init() {
 	if err != nil {
 		baseDir = os.TempDir()
 	}
-	flag.IntConfigVar(&Port, "port", "server", "port", 9527, "服务端口")
+	flag.StringConfigVar(&Port, "port", "server", "port", "auto", "服务端口")
 	flag.StringConfigVar(&ShareFilePath, "path", "server", "path", baseDir, "分享文件的路径")
 	flag.StringConfigVar(&Bind, "bind", "server", "bind", "127.0.0.1", "监听的IP地址")
 	flag.StringConfigVar(&ApiPrefix, "api-prefix", "server", "prefix", "/api", "API路由前缀")
@@ -33,5 +34,6 @@ func init() {
 	flag.BoolConfigVar(&IgnoreDotFiles, "ignore-dot", "server", "ignore-dot", true, "忽略点开头的文件")
 	flag.StringConfigVar(&UploadTmpPath, "upload-tmp", "server", "upload-tmp", filepath.Join(baseDir, ".uploads"), "上传临时文件路径")
 	flag.BoolVar(&ApiMode, "api-mode", false, "只启动为api模式")
+	flag.BoolVar(&Gui, "gui", false, "启动GUI")
 	flag.Parse()
 }
