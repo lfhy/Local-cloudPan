@@ -329,9 +329,25 @@
     else if (row.fileType === 'video' || row.fileType === 'audio') {
       const { fileType: type, filePath: url, name } = row;
       showPlayWindow(name, url, type);
-    } else if (row.fileType === 'document' && ['pdf', 'txt', 'md'].includes(row.ext)) {
-      const { ext: type, filePath: url, name } = row;
-      showPlayWindow(name, url, type);
+    } else if (row.fileType === 'document') {
+      if (['pdf', 'txt', 'md'].includes(row.ext)) {
+        const { ext: type, filePath: url, name } = row;
+        showPlayWindow(name, url, type);
+      } else if (['doc','docx'].includes(row.ext)) {
+        const { filePath: url, name } = row;
+        showPlayWindow(name, url, 'docx');
+      } else if (['ppt','pptx'].includes(row.ext)) {
+        const { filePath: url, name } = row;
+        showPlayWindow(name, url, 'pptx');
+      } else if  (['xls','xlsx'].includes(row.ext)) {
+        const { filePath: url, name } = row;
+        showPlayWindow(name, url, 'xlsx');
+      } else {
+        ElMessage({
+        type: 'warning',
+        message: '此类文件无法预览，请下载后查看！',
+      });
+      }
     } else if (row.fileType === 'picture') {
       // ElMessage({
       //   type: 'info',

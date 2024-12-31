@@ -32,14 +32,38 @@
         <div class="md-content" ref="mdHtml"></div>
       </div>
       <!-- 图片展示 -->
-      <div v-else-if="playInfo.type === 'picture'" class="picture">
+      <div v-else-if="playInfo.type === 'picture'" class="inner-wrapper">
         <el-image
           :src="playInfo.url"
           :lazy="true"
-          class="picture"
+          class="inner-wrapper"
           fit="contain"
           preview-teleported
           @click.stop="() => {}" />
+      </div>
+      <div v-else-if="playInfo.type === 'docx'" class="inner-wrapper">
+        <vue-office-docx   v-loading="loading"
+          :src=playInfo.url
+          style="height: calc(100vh - 9rem);"
+          @rendered="renderedHandler"
+          @error="errorHandler"
+      />
+    </div>
+      <div v-else-if="playInfo.type === 'xlsx'" class="inner-wrapper">
+        <vue-office-excel v-loading="loading"
+          :src=playInfo.url
+          style="height: calc(100vh - 9rem);"
+          @rendered="renderedHandler"
+          @error="errorHandler"
+      />
+    </div>
+      <div v-else-if="playInfo.type === 'pptx'" class="inner-wrapper">
+        <vue-office-pptx v-loading="loading"
+          :src=playInfo.url
+          style="height: calc(100vh - 9rem);"
+          @rendered="renderedHandler"
+          @error="errorHandler"
+      />
       </div>
       <!-- txt | pdf -->
       <iframe
@@ -66,6 +90,18 @@
   import { VideoPlayer } from '@videojs-player/vue'
   import 'video.js/dist/video-js.css'
 
+  //引入VueOfficeDocx组件
+  import VueOfficeDocx from '@vue-office/docx'
+  //引入相关样式
+  import '@vue-office/docx/lib/index.css'
+
+  //引入VueOfficeExcel组件
+  import VueOfficeExcel from '@vue-office/excel'
+  //引入相关样式
+  import '@vue-office/excel/lib/index.css'
+
+  import VueOfficePptx from '@vue-office/pptx'
+
   defineOptions({ name: 'PlayPage' });
   const props = defineProps<{
     playPageShow: boolean;
@@ -75,6 +111,18 @@
       type: string;
     };
   }>();
+  const loading = ref(true);
+  const error = ref(null);
+
+  const renderedHandler = () => {
+    loading.value = false;
+  };
+
+  const errorHandler = (err) => {
+    error.value = err;
+    loading.value = false;
+  };
+
   const emit = defineEmits(['update:playPageShow']);
 
   const video = ref<HTMLElement>(null);
@@ -110,6 +158,7 @@
   };
 
   const hanleClose = () => emit('update:playPageShow', false);
+
 
   onMounted(() => {
     if (mdHtml.value) {
